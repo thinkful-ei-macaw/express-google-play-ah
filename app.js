@@ -44,15 +44,15 @@ app.get('/apps', (req, res) => {
   genre = firstGenreLetter + remainderGenre;
 
   if (genre) {
-    if (![possibleGenres].includes(genre)) {
+    console.log(results);
+    if (!possibleGenres.includes(genre)) {
       return res
         .status(400)
         .send('genre must be one of action, puzzle, strategy, arcade or card');
-    } else {
-      return results.filter(result => result.Genre === genre);
-    }
-  }
+    } 
 
+    results = results.filter(result => result.Genres.includes(genre));
+  }
 
 
   res
