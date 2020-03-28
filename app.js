@@ -3,24 +3,62 @@ const morgan = require('morgan');
 
 const app = express();
 
-const apps = require('./playstore.js');
+app.use(morgan('common'));
 
-app.get('/apps', (req, res) =>{
-  const { search = '' } = req.query;
+const appsData = require('./playstore.js');
 
-  let appName = apps
-    .filter(app =>
-      app
-        .App
-        .toLowerCase()
-        .includes(search.toLowerCase()));
-  
-  
+app.get('/apps', (req, res) => {
+  let { sort, genre } = req.query;
+  let results = appsData;
+
+  // try to set this up to throw an error if word is not entered right
+  // Dealing with the sort query:
+  let firstLetter = sort.slice(0, 1).toUpperCase();
+  let remainder = sort.slice(1).toLowerCase();
+
+  sort = firstLetter + remainder;
+
+  if (sort) {
+    // check if this array does not include value
+    if (!['Rating', 'App'].includes(sort)) {
+      return res
+        .status(400)
+        .send('Sort must be one of rating or app');
+    }
+  }
+
+  if (sort) {
+    results
+      .sort((a, b) => {
+        return a[sort] > b[sort] ? 1 : 
+          a[sort] < b[sort] ? -1 : 0;
+      });
+  }  
+
+  // Dealing with the genres query:
+  const possibleGenres = ['Action', 'Puzzle', 'Strategy', 'Arcade', 'Card'];
+
+  let firstGenreLetter = genre.slice(0, 1).toUpperCase();
+  let remainderGenre = genre.slice(1).toLowerCase();
+
+  genre = firstGenreLetter + remainderGenre;
+
+  if (genre) {
+    if (![possibleGenres].includes(genre)) {
+      return res
+        .status(400)
+        .send('genre must be one of action, puzzle, strategy, arcade or card');
+    } else {
+      return results.filter(result => result.Genre === genre);
+    }
+  }
+
+
+
   res
-    .json(appName);    
-
+    .json(results);
 });
 
 app.listen(8000, () => {
-  console.log('Listening on server 8000!');
+  console.log('Server started on PORT 8000');
 });
