@@ -15,9 +15,7 @@ app.get('/apps', (req, res) => {
   let { sort, genre } = req.query;
   let results = appsData;
 
-  // try to set this up to throw an error if word is not entered right
   // Dealing with the sort query:
-  
   
   if (sort) {
     let firstLetter = sort.slice(0, 1).toUpperCase();
@@ -41,7 +39,6 @@ app.get('/apps', (req, res) => {
 
   // Dealing with the genres query:
   const possibleGenres = ['Action', 'Puzzle', 'Strategy', 'Arcade', 'Card'];
-
   
   if (genre) {
     let firstGenreLetter = genre.slice(0, 1).toUpperCase();

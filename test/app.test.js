@@ -13,7 +13,7 @@ describe('GET /apps', () => {
         expect(res.body).to.have.lengthOf.at.least(1);
         const app = res.body[0];
         expect(app).to.include.all.keys(
-          'App', 'Category', 'Rating', 'Genres');
+          'App', 'Rating', 'Genres');
       });
   });
   it('should be 400 if sort is incorrect', () => {
@@ -29,9 +29,55 @@ describe('GET /apps', () => {
       .expect(400, 'genre must be one of action, puzzle, strategy, arcade or card');
   });
 
-  it('should sort by app');
-  it('should sort by rating');
-  it('should filter by genre');
-  it('should sort and filter for genre');
+  it('should sort by app', () => {
+    return supertest(app)
+      .get('/apps')
+      .query({ sort: 'app' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(res => {
+        let sorted = true;
+        let i = 0;
+
+        while (i < res.body.length -1) {
+          const appAtI = res.body[i];
+          const appAtIPlus1 = res.body[i + 1];
+
+          if (appAtIPlus1.app < appAtI.app) {
+            sorted = false;
+            break;
+          }
+          i++;
+        }
+        expect(sorted).to.be.true;
+      });
+  });
+  it('should sort by rating', () => {
+    return supertest(app)
+      .get('/apps')
+      .query({ sort: 'rating' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(res => {
+        let sorted = true;
+        let i = 0;
+
+        while (i < res.body.length -1) {
+          const appAtI = res.body[i];
+          const appAtIPlus1 = res.body[i + 1];
+
+          if (appAtIPlus1.rating < appAtI.rating) {
+            sorted = false;
+            break;
+          }
+          i++;
+        }
+        expect(sorted).to.be.true;
+      });
+  });
+
+
+  // it('should filter by genre');
+  // it('should sort and filter for genre');
 
 });
