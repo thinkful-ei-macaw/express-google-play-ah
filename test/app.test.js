@@ -75,9 +75,30 @@ describe('GET /apps', () => {
         expect(sorted).to.be.true;
       });
   });
+  it('should filter by genre', () => {
+    const query = {
+      genre: 'card'
+    };
 
+    return supertest(app)
+      .get('/apps')
+      .query(query)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .then(res => {
+        let filtered = true;
+        let i = 0;
 
-  // it('should filter by genre');
-  // it('should sort and filter for genre');
-
+        while (i < res.body.length) {
+          const currentApp = res.body[i];
+          // console.log(currentApp);
+          if (!currentApp.Genres.includes('Card')) {
+            filtered = false;
+            break;
+          }
+          i++;
+        }
+        expect(filtered).to.be.true;
+      });
+  });
 });
